@@ -99,6 +99,10 @@ class Heap {
     std::vector<T> getHeap() {
         return vec;
     }
+    
+    int size() {
+        return vec.size();
+    }
 };
 
 
