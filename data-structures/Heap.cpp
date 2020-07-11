@@ -6,9 +6,11 @@
 template <typename T> 
 class Heap {
     
-    bool isMinHeap;
-    std::vector<T> vec;
+    // Can be populated by providing a comparator function
+    // Eg: MaxHeap: std::greater<T>(), 
+    // Eg: MinHeap: std::less<T>()
     std::function<bool(const T&,const T&)> heapCompareFn;
+    std::vector<T> vec;
     
     int getParentIdx(int x) { return (x-1)/2; }
     int getLeftChildIdx(int x) { return (2*x)+1; }
@@ -65,9 +67,9 @@ class Heap {
     
     public:
     
-    Heap(bool isMinHeap, std::vector<T> vec): isMinHeap(isMinHeap), vec(vec) {
-        if(isMinHeap) { heapCompareFn = std::less<T>(); }
-        else { heapCompareFn = std::greater<T>(); }
+    Heap(std::function<bool(const T&,const T&)> comparator): heapCompareFn(comparator){}
+    
+    Heap(std::function<bool(const T&,const T&)> comparator, std::vector<T> vec): heapCompareFn(comparator), vec(vec) {
         convertToHeap();
     }
     
@@ -99,19 +101,63 @@ class Heap {
     }
 };
 
+
+/**
+ * Examples 
+ */
+void minHeapTest() {
+    std::cout<<"----------MinHeap Test (Start)----------\n";
+    std::vector<double> vec = {2.112, 3.5, 5.5, 2.1, 1};
+    Heap<double> minHeap = Heap<double>(std::less<double>(), vec);
+    std::vector<double> sorted = minHeap.getSorted();
+	for(auto &num : sorted) { std::cout<<num<<" "; }
+	std::cout<<std::endl;
+	std::vector<double> heap = minHeap.getHeap();
+	for(auto &num : heap) { std::cout<<num<<" "; }
+	std::cout<<std::endl;
+	std::cout<<"----------MinHeap Test (End)----------\n";
+}
+
+void maxHeapTest() {
+    std::cout<<"----------MaxHeap Test (Start)----------\n";
+    std::vector<double> vec = {2.112, 3.5, 5.5, 2.1, 1};
+    Heap<double> maxHeap = Heap<double>(std::greater<double>(), vec);
+    std::vector<double> sorted = maxHeap.getSorted();
+	for(auto &num : sorted) { std::cout<<num<<" "; }
+	std::cout<<std::endl;
+	std::vector<double> heap = maxHeap.getHeap();
+	for(auto &num : heap) { std::cout<<num<<" "; }
+	std::cout<<std::endl;
+	std::cout<<"----------MaxHeap Test (End)----------\n";
+}
+
+bool pairLessThanByFirst(const std::pair<int, int> &lhs, const std::pair<int, int> &rhs) {
+    return lhs.first < rhs.first;
+}
+void minHeapByVecIndexTest() {
+    std::cout<<"----------MinHeap [Maintain Index] Test (Start)----------\n";
+    std::vector<int> vec = {2, 3, 5, 21, 1, 9, 12};
+    Heap<std::pair<int, int>> minPairHeap = Heap<std::pair<int, int>>(pairLessThanByFirst);
+    for(int i=0;i<vec.size();i++) {
+        minPairHeap.push({vec[i], i});
+    }
+    auto sorted = minPairHeap.getSorted();
+	for(auto &entry : sorted) { 
+	    std::cout<<"("<<entry.first<<","<<entry.second<<") "; 
+	}
+	std::cout<<std::endl;
+	auto heap = minPairHeap.getHeap();
+	for(auto &entry : heap) { 
+	    std::cout<<"("<<entry.first<<","<<entry.second<<") "; 
+	}
+	std::cout<<std::endl;
+	std::cout<<"----------MinHeap [Maintain Index] Test (End)----------\n";
+}
+
 int main(void) {
-//  Test Implementation
-// 	Heap<double> minHeap = Heap<double>(true, {2.112, 3.5, 5.5, 2.1, 1});
-// 	std::vector<double> sorted = minHeap.getSorted();
-// 	for(auto &num : sorted) {
-// 	    std::cout<<num<<" ";
-// 	}
-// 	std::cout<<std::endl;
-// 	std::vector<double> heap = minHeap.getHeap();
-// 	for(auto &num : heap) {
-// 	    std::cout<<num<<" ";
-// 	}
-// 	std::cout<<std::endl;
+	minHeapTest();
+	maxHeapTest();
+	minHeapByVecIndexTest();
 	return 0;
 }
 
